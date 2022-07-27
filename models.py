@@ -57,7 +57,7 @@ class Listing(db.Model):
     )
 
     description = db.Column(
-        db.Text(300),
+        db.Text,
         nullable=False,
         )
 

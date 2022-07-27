@@ -2,8 +2,8 @@
 import os
 from dotenv import load_dotenv
 
-from pickle import GET
-from webbrowser import get
+# from pickle import GET
+# from webbrowser import get
 from flask import Flask, url_for, render_template, redirect, flash, jsonify, request
 
 import boto3
@@ -11,7 +11,7 @@ s3 = boto3.resource('s3')
 
 from flask_debugtoolbar import DebugToolbarExtension
 
-from models import db, connect_db
+from models import db, connect_db, Listing
 # from forms import AddPetForm, EditPetForm
 
 load_dotenv()
@@ -23,7 +23,7 @@ app.config['SQLALCHEMY_ECHO'] = True
 AWS_BUCKET = os.environ['AWS_BUCKET']
 AWS_BASE_URL = os.environ['AWS_BASE_URL']
 
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///listings"
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///share_bnb"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 connect_db(app)
@@ -94,7 +94,7 @@ def listing_create():
     #   Should occur in post route logic, not via form input.
     img_key = form_data["img_key"]
     description = form_data["description"]
-    price = form_data["price"]
+    price = int(form_data["price"])
     zipcode = form_data["zipcode"]
 
     print ('############## ',title,img_key,description,price,zipcode)
@@ -117,15 +117,18 @@ def listing_create():
     # # image = request.get_json()["image"]
 
     # # TODO:
-    # new_cupcake = Cupcake(
-    #     flavor=flavor,
-    #     size=size,
-    #     rating=rating,
-    #     image=image)
+    new_listing = Listing(
+        title=title,
+        img_key=img_key,
+        description=description,
+        price=price,
+        zipcode=zipcode,
+        )
+
 
     # # TODO:
-    # db.session.add(new_cupcake)
-    # db.session.commit()
+    db.session.add(new_listing)
+    db.session.commit()
 
     # # TODO:
     # serialized = new_cupcake.serialize()
