@@ -1,4 +1,9 @@
 """Flask app for Share BnB API."""
+import os
+
+AWS_BUCKET = os.environ['AWS_BUCKET']
+AWS_BASE_URL = os.environ['AWS_BASE_URL']
+
 
 from pickle import GET
 from webbrowser import get
@@ -100,7 +105,14 @@ def get_Listings():
 
     return render_template("file_input.html")
 
+# TODO: Intead of an int. Make it test7.jpg
+# Flask please make a request to our database where the url is stored
+# Store that in a variable
+# Return renderTemplate("TODO:",variable)
 
+# How do link together the URL of the img to an <img>
+
+# Variable is jinja interpolated in an <img src={variable}>
 @app.route("/api/listings/<int:listing_id>", methods=["GET"])
 def get_listing(listing_id):
     """
@@ -135,13 +147,18 @@ def listing_create():
 
     # Upload a new file
     # data = open('test.jpg', 'rb')
-    resp = s3.Bucket('c-sharebnb-r26').put_object(Key='test4.jpg', Body=file_to_upload)
+    # Puts ion bucket?
+    resp = s3.Bucket(AWS_BUCKET).put_object(Key='test7.jpg', Body=file_to_upload)
+    # Not duplicate action, just provides the url?
+    # aws_url = s3.generate_presigned_url('put_object', Params= {'Bucket': AWS_BUCKET,
+    #                                                     "Key":"test6"},
+    #                                                      ExpiresIn=3600)
 
     # print ('resp = ',resp.key,resp.keys())
+    # print ("aws_url = ",aws_url)
 
-    url = f'https://c-sharebnb-r26.s3.us-west-1.amazonaws.com/{resp.key}'
-
-    print(url)
+    url = f'{AWS_BASE_URL}{resp.key}'
+    print('url = ',url)
 
     # FOR REFERENCE
     ###################################################
@@ -180,7 +197,7 @@ def listing_create():
 
     # TODO: Return the url for the file!
     # redirect('https://c-sharebnb-r26.s3.us-west-1.amazonaws.com/')
-    return "(POST) /api/listings " + url
+    return render_template('file_input.html',url=url)
 
 # ######################################################################## PATCH
 
