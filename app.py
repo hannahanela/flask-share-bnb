@@ -2,20 +2,24 @@
 
 from pickle import GET
 from webbrowser import get
-from flask import Flask, url_for, render_template, redirect, flash, jsonify
+from flask import Flask, url_for, render_template, redirect, flash, jsonify, request
+
+import boto3
+s3 = boto3.resource('s3')
 
 from flask_debugtoolbar import DebugToolbarExtension
 
-from models import db, connect_db, Pet
-from forms import AddPetForm, EditPetForm
+# TODO: Database
+from models import db, connect_db
+# from forms import AddPetForm, EditPetForm
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = "secret"
 
 # TODO: update w/ db name
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///adopt"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///adopt"
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 connect_db(app)
 db.create_all()
@@ -64,6 +68,19 @@ toolbar = DebugToolbarExtension(app)
 # @app.route('path',methods=["get"])
 
 
+# TODO:A running file.
+# Right now the file has many un instantiated variables and will crash
+
+# TODO:Post route work
+
+# TODO: After running file able to make an insomnia request to route.
+
+
+
+
+
+
+
 # TODO: to /api??
 @app.route('/api/listings', methods=["GET"])
 def get_Listings():
@@ -73,13 +90,15 @@ def get_Listings():
             listing as {username, img, description, price}
     """
 
-    # TODO: Create Listing Object
-    listings = Listing.query.all()
-    # TODO: What is serializing again?
-    serialized = [cupcake.serialize() for cupcake in cupcakes]
+    # # TODO: Create Listing Object
+    # listings = Listing.query.all()
+    # # TODO: What is serializing again?
+    # serialized = [cupcake.serialize() for cupcake in cupcakes]
 
-    # TODO:
-    return jsonify(listings=serialized)
+    # # TODO:
+    # return jsonify(listings=serialized)
+
+    return '/api/listings'
 
 
 @app.route("/api/listings/<int:listing_id>", methods=["GET"])
@@ -88,13 +107,15 @@ def get_listing(listing_id):
     Get data about a single listing. Returns with JSON:
         {listing: {username, img, description, price}}
     """
-    # TODO: Internal route logic
-    listing = Listing.query.get_or_404(listing_id)
-    serialize = listing.serialize()
+    # # TODO: Internal route logic
+    # listing = Listing.query.get_or_404(listing_id)
+    # serialize = listing.serialize()
 
-    return jsonify(listing=serialize)
+    # return jsonify(listing=serialize)
 
-
+    return "/api/listings/<int:listing_id>"
+# ######################################################################### POST
+# FIXME: listings? Or listing?
 @app.route("/api/listings",methods=["POST"])
 def listing_create():
     """
@@ -105,32 +126,57 @@ def listing_create():
         {listing: {username,img, description, price}}
     """
 
-    # TODO:
-    flavor = request.json["flavor"]
-    size = request.json["size"]
-    rating = request.json["rating"]
-    image = request.json.get("image")
-    image = image if image else None
+    print ('###################################################',request)
+    print ('request.files[file] = ',request.files["file"])
 
-    # alternate method
-    # image = request.get_json()["image"]
+    file_to_upload = request.files["file"]
 
-    # TODO:
-    new_cupcake = Cupcake(
-        flavor=flavor,
-        size=size,
-        rating=rating,
-        image=image)
+    # c-sharebnb-r26
 
-    # TODO:
-    db.session.add(new_cupcake)
-    db.session.commit()
+    # Upload a new file
+    # data = open('test.jpg', 'rb')
+    resp = s3.Bucket('c-sharebnb-r26').put_object(Key='test.jpg', Body=file_to_upload)
 
-    # TODO:
-    serialized = new_cupcake.serialize()
+    print ('resp = ',resp)
 
-    # TODO:
-    return (jsonify(cupcake=serialized), 201)
+    # FOR REFERENCE
+    ###################################################
+    # <Request 'http://localhost:5001/results' [POST]>
+    # request.files[file] =  <FileStorage: 'testCat.jpeg' ('image/jpeg')>
+    # resp =  s3.Object(bucket_name='c-sharebnb-r26', key='test.jpg')
+
+    # TODO: request.files
+
+    # # TODO:
+    # flavor = request.json["flavor"]
+    # size = request.json["size"]
+    # rating = request.json["rating"]
+    # image = request.json.get("image")
+    # image = image if image else None
+
+    # # alternate method
+    # # image = request.get_json()["image"]
+
+    # # TODO:
+    # new_cupcake = Cupcake(
+    #     flavor=flavor,
+    #     size=size,
+    #     rating=rating,
+    #     image=image)
+
+    # # TODO:
+    # db.session.add(new_cupcake)
+    # db.session.commit()
+
+    # # TODO:
+    # serialized = new_cupcake.serialize()
+
+    # # TODO:
+    # return (jsonify(cupcake=serialized), 201)
+
+    return "(POST) /api/listings"
+
+# ######################################################################## PATCH
 
 
 @app.route('/api/listings/<int:listing_id>',methods=["PATCH"])
@@ -143,40 +189,44 @@ def listing_update_values(listing_id):
         {listing: {username,img, description, price}}
     """
 
-    # TODO:
-    cupcake = Cupcake.query.get_or_404(cupcake_id)
+    # text = silly_story.generate(request.args)
 
-    # TODO:
-    flavor = request.json.get("flavor")
-    if flavor:
-        cupcake.flavor = flavor
+    # # TODO:
+    # cupcake = Cupcake.query.get_or_404(cupcake_id)
 
-    size = request.json.get("size")
-    if size:
-        cupcake.size = size
+    # # TODO:
+    # flavor = request.json.get("flavor")
+    # if flavor:
+    #     cupcake.flavor = flavor
 
-    rating = request.json.get("rating")
-    if rating:
-        cupcake.rating = rating
+    # size = request.json.get("size")
+    # if size:
+    #     cupcake.size = size
 
-    image = request.json.get("image")
-    if image:
-        cupcake.image = image
+    # rating = request.json.get("rating")
+    # if rating:
+    #     cupcake.rating = rating
 
-    # TODO: Question on variable attributes:
-    # possible_updates = ['flavor','size','rating','image']
+    # image = request.json.get("image")
+    # if image:
+    #     cupcake.image = image
 
-    # for update in possible_updates:
-    #     if update:
-    #         cupcake.(update)
+    # # TODO: Question on variable attributes:
+    # # possible_updates = ['flavor','size','rating','image']
 
-    db.session.commit()
+    # # for update in possible_updates:
+    # #     if update:
+    # #         cupcake.(update)
 
-    # TODO: Why dont we re-initialize cupcake after commit?
-    # cupcake = Cupcake.query.get(cupcake_id)
-    serialize = cupcake.serialize()
-    # TODO:
-    return (jsonify(cupcake=serialize))
+    # db.session.commit()
+
+    # # TODO: Why dont we re-initialize cupcake after commit?
+    # # cupcake = Cupcake.query.get(cupcake_id)
+    # serialize = cupcake.serialize()
+    # # TODO:
+    # return (jsonify(cupcake=serialize))
+
+    return '(Patch) /api/listings/<int:listing_id>'
 
 
 @app.route('/api/listings/<int:listing_id>',methods=["DELETE"])
@@ -187,15 +237,17 @@ def listing_delete(listing_id):
     returns JSON {deleted: [listing-id]}
     """
 
-    # TODO:
-    cupcake = Cupcake.query.get_or_404(cupcake_id)
+    # # TODO:
+    # cupcake = Cupcake.query.get_or_404(cupcake_id)
 
-    # TODO:
-    db.session.delete(cupcake)
-    db.session.commit()
+    # # TODO:
+    # db.session.delete(cupcake)
+    # db.session.commit()
 
-    # TODO:
-    return {"deleted":cupcake_id}
+    # # TODO:
+    # return {"deleted":cupcake_id}
+
+    return '(DELETE) /api/listings/<int:listing_id>'
 
 
 
