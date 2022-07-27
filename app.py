@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 # from webbrowser import get
 from flask import Flask, url_for, render_template, redirect, flash, jsonify, request
 
+import uuid
+
 import boto3
 s3 = boto3.resource('s3')
 
@@ -75,34 +77,58 @@ def get_listing(listing_id):
 @app.route("/api/listings",methods=["POST"])
 def listing_create():
     """
-    Creates a listing instance with username, img, description, price and adds
+    Creates a listing instance with title, img_key, description, price and zipcode
     to db.
-    # Takes username, img, description, price.
+
+    Accepts 1 file via request.files, makes a put_object request to AWS
+    Stores the file in AWS bucket. Sets file extension and stores file extension
+    in database as img_key.
+
     Returns with JSON:
-        {listing: {username,img, description, price}}
+       TODO:  {listing: {username,img, description, price}}
     """
 
-    # print ('###################################################',request)
-    # print ('request.files[file] = ',request.files["file"])
+    # TODO: Allowed file extensions
 
     file_to_upload = request.files["file"]
+    print ('###################################################',request.files)
+    print ('request.files[file] = ',request.files["file"])
+    print('file_to_upload.filename = ',file_to_upload.filename)
+    file_proper = file_to_upload.filename
+    file_extension = file_proper.split(".")[1]
+    print ("THE FILE EXTENSION!!! = ", file_extension)
+
+    # We have the file extension
+    id = uuid.uuid4()
+
+    #
+    # "Unique identifer" + "." + "file_extension"
+
+    url = f'{AWS_BASE_URL}{id}.{file_extension}'
+    print('url = ',url)
+
+
+
+    # Put in 2 places
+    # 1. new_listing = Listing(img_key="Unique identifer" + "." + "file_extension"
+    # 2. s3.Bucket(AWS_BUCKET).put_object(Key="Unique identifer" + "." + "file_extension"
+
+
+
+
+    # FIXME: FORM DATA CATCH AND ASSIGN AS VARIABLES
     form_data = request.form
-    print("Form_Data = ",form_data)
+    # print("Form_Data = ",form_data)
 
     title = form_data["title"]
-    # TODO: Way to create Unique key for file naming
-    #   Should occur in post route logic, not via form input.
-    img_key = form_data["img_key"]
     description = form_data["description"]
     price = int(form_data["price"])
     zipcode = form_data["zipcode"]
 
-    print ('############## ',title,img_key,description,price,zipcode)
+    # print ('############## ',title,img_key,description,price,zipcode)
 
-    resp = s3.Bucket(AWS_BUCKET).put_object(Key='test7.jpg', Body=file_to_upload)
-
-    url = f'{AWS_BASE_URL}{resp.key}'
-    print('url = ',url)
+    # REQUEST TO AWS TO PUT IN BUCKETY
+    resp = s3.Bucket(AWS_BUCKET).put_object(Key=f"{id}.{file_extension}", Body=file_to_upload)
 
 
 
@@ -116,17 +142,17 @@ def listing_create():
     # # alternate method
     # # image = request.get_json()["image"]
 
-    # # TODO:
+
     new_listing = Listing(
         title=title,
-        img_key=img_key,
+        img_key=f'{id}.{file_extension}',
         description=description,
         price=price,
         zipcode=zipcode,
         )
 
 
-    # # TODO:
+    # FIXME: PUT IN DATABASE
     db.session.add(new_listing)
     db.session.commit()
 
@@ -139,6 +165,8 @@ def listing_create():
     # TODO: Return the url for the file!
     # redirect('https://c-sharebnb-r26.s3.us-west-1.amazonaws.com/')
     return render_template('file_input.html',url=url)
+    # return render_template('file_input.html')
+
 
 # ######################################################################## PATCH
 

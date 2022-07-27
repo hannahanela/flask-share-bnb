@@ -50,7 +50,7 @@ class Listing(db.Model):
     )
 
     img_key = db.Column(
-        db.String(30),
+        db.String,
         nullable=False,
         unique=True,
         # TODO: default would be great!
