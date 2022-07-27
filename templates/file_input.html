@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %} Madlibs! {% endblock %}
+
+{% block content %}
+
+  <h1 class="pt-4 mb-3 text-center">File Input!</h1>
+
+  <div class="ms-3 me-3">
+    <form enctype="multipart/form-data" action="/api/listings" class="pb-4" method="POST">
+
+      <label for="file">
+        <input  type="file" name="file" id="file">
+      </label>
+
+      <button class="btn btn-primary btn-lg w-100">
+        Uploads a File!
+      </button>
+    </form>
+</div>
+
+{% endblock %}

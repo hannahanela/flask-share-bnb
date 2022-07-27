@@ -98,7 +98,7 @@ def get_Listings():
     # # TODO:
     # return jsonify(listings=serialized)
 
-    return '/api/listings'
+    return render_template("file_input.html")
 
 
 @app.route("/api/listings/<int:listing_id>", methods=["GET"])
@@ -131,13 +131,17 @@ def listing_create():
 
     file_to_upload = request.files["file"]
 
-    # c-sharebnb-r26
+    # # c-sharebnb-r26
 
     # Upload a new file
     # data = open('test.jpg', 'rb')
-    resp = s3.Bucket('c-sharebnb-r26').put_object(Key='test.jpg', Body=file_to_upload)
+    resp = s3.Bucket('c-sharebnb-r26').put_object(Key='test4.jpg', Body=file_to_upload)
 
-    print ('resp = ',resp)
+    # print ('resp = ',resp.key,resp.keys())
+
+    url = f'https://c-sharebnb-r26.s3.us-west-1.amazonaws.com/{resp.key}'
+
+    print(url)
 
     # FOR REFERENCE
     ###################################################
@@ -174,7 +178,9 @@ def listing_create():
     # # TODO:
     # return (jsonify(cupcake=serialized), 201)
 
-    return "(POST) /api/listings"
+    # TODO: Return the url for the file!
+    # redirect('https://c-sharebnb-r26.s3.us-west-1.amazonaws.com/')
+    return "(POST) /api/listings " + url
 
 # ######################################################################## PATCH
 
