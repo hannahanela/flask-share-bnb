@@ -1,9 +1,6 @@
 """Flask app for Share BnB API."""
 import os
-
-AWS_BUCKET = os.environ['AWS_BUCKET']
-AWS_BASE_URL = os.environ['AWS_BASE_URL']
-
+from dotenv import load_dotenv
 
 from pickle import GET
 from webbrowser import get
@@ -18,15 +15,21 @@ from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db
 # from forms import AddPetForm, EditPetForm
 
+load_dotenv()
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = "secret"
+app.config['SQLALCHEMY_ECHO'] = True
+
+AWS_BUCKET = os.environ['AWS_BUCKET']
+AWS_BASE_URL = os.environ['AWS_BASE_URL']
 
 # TODO: update w/ db name
 # app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///adopt"
 # app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 connect_db(app)
+db.drop_all()
 db.create_all()
 
 
