@@ -1,4 +1,5 @@
-"""Models for Share BnB API."""
+"""Models for Share BnB app."""
+
 from flask_sqlalchemy import SQLAlchemy
 # db = SQLAlchemy()
 from flask_bcrypt import Bcrypt
@@ -9,5 +10,85 @@ bcrypt = Bcrypt()
 
 def connect_db(app):
     """Connect to database."""
+
     db.app = app
     db.init_app(app)
+
+############################# Classes ##########################################
+
+######## The One in "One-Many"
+class ModelNameOne...(db.Model):
+    """
+    Creates a ... instance.
+    Class Methods:
+    """
+
+    __tablename__ = "A..."
+#     Requires a database be created in psql. Check terminal psql commands.
+
+# Always check that Column is uppercase. Common bug.
+# Primary key auto sets nullable = False, & unique=True
+    column_name = db.Column(
+        db.String(20),
+        primary_key=True)
+    column_name_2 = db.Column(
+        db.text,
+        nullable=False,
+        unique=True)
+
+#############   Class methods; cls is the self equivalent of Classes. ##########
+# Example register a user. Called on the Class instance.
+    @classmethod
+    def register(cls, username, password, email, first_name, last_name):
+        """
+        Register user w/hashed password & return user.
+        Returns a new user instance
+        """
+
+        hashed = bcrypt.generate_password_hash(password).decode('utf8')
+
+        # return instance of user w/username and hashed pwd
+        return cls(
+            username=username,
+            password=hashed,
+            email=email,
+            first_name=first_name,
+            last_name=last_name)
+
+#       Example Authentication of user.
+    @classmethod
+    def authenticate(cls, username, password):
+        """
+        Validate that a user exists and that the password matches stored
+        hashed value in database.
+        Accepts username,password.
+        Returns User Instance
+        """
+
+        user = cls.query.filter_by(username=username).one_or_none()
+
+        if user and bcrypt.check_password_hash(user.password, password):
+            return user
+        else:
+            return False
+
+################### Example foreign Key/ backref relationship ###############
+# The Many in "One-Many"
+class ModelNameMany...(db.Model):
+    """
+    Creates a ... instance.
+    """
+
+    __tablename__ = "B..."
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+        autoincrement=True)
+    owner = db.Column(
+        db.String(20),
+        db.ForeignKey('A.column_name_2'))
+
+    users = db.relationship('ModelNameOne...', backref='B')
+
+####################################################################
