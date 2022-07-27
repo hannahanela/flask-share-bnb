@@ -11,7 +11,6 @@ s3 = boto3.resource('s3')
 
 from flask_debugtoolbar import DebugToolbarExtension
 
-# TODO: Database
 from models import db, connect_db
 # from forms import AddPetForm, EditPetForm
 
@@ -24,9 +23,8 @@ app.config['SQLALCHEMY_ECHO'] = True
 AWS_BUCKET = os.environ['AWS_BUCKET']
 AWS_BASE_URL = os.environ['AWS_BASE_URL']
 
-# TODO: update w/ db name
-# app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///adopt"
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///listings"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 connect_db(app)
 db.drop_all()
@@ -35,61 +33,11 @@ db.create_all()
 
 # Having the Debug Toolbar show redirects explicitly is often useful;
 # however, if you want to turn it off, you can uncomment this line:
-#
+
 # app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 toolbar = DebugToolbarExtension(app)
 
-# RESTful Routes for Listings
-# GET all
-    # GET /listings
-    # LISTINGS_MODEL.query.all()
-    # [{listing}, ...] listing as {username, img, description, price}
-# GET one
-    # GET /listings/<listing_id?>
-    # LISTINGS_MODEL.query.get_or_404(id?)
-    # {username, img, descr, price}
-# POST
-    # POST /listings
-    # make sure not a duplicate listing validation
-    # AWS happens here****is this successful?
-    # listings_model.create
-    # resp 201 CREATED {username, img, descr, price}
-# DELETE
-    # DELETE /listings/<listing_id?>
-    # query.get_or_404(listing_id?)
-    # AWS remove happens here****
-    # .delete(listing)
-    # return success message
-# PATCH
-    # PATCH /listings/<listing_id?>
-    # query.get_or_404(id?)
-    # get form inputs --> does this inlude a new img?
-        # if img, AWS remove old, add new
-    # request.json.get("descr")
-        # update db
-    # return success msg & {username, img, descr, price}
-# request sent from browser
-# query db
-# return data as JSON
-# @app.get("/")
-# @app.route('path',methods=["get"])
-
-
-# TODO:A running file.
-# Right now the file has many un instantiated variables and will crash
-
-# TODO:Post route work
-
-# TODO: After running file able to make an insomnia request to route.
-
-
-
-
-
-
-
-# TODO: to /api??
 @app.route('/api/listings', methods=["GET"])
 def get_Listings():
     """
@@ -108,14 +56,6 @@ def get_Listings():
 
     return render_template("file_input.html")
 
-# TODO: Intead of an int. Make it test7.jpg
-# Flask please make a request to our database where the url is stored
-# Store that in a variable
-# Return renderTemplate("TODO:",variable)
-
-# How do link together the URL of the img to an <img>
-
-# Variable is jinja interpolated in an <img src={variable}>
 @app.route("/api/listings/<int:listing_id>", methods=["GET"])
 def get_listing(listing_id):
     """
@@ -129,8 +69,9 @@ def get_listing(listing_id):
     # return jsonify(listing=serialize)
 
     return "/api/listings/<int:listing_id>"
+
 # ######################################################################### POST
-# FIXME: listings? Or listing?
+
 @app.route("/api/listings",methods=["POST"])
 def listing_create():
     """
@@ -141,37 +82,31 @@ def listing_create():
         {listing: {username,img, description, price}}
     """
 
-    print ('###################################################',request)
-    print ('request.files[file] = ',request.files["file"])
+    # print ('###################################################',request)
+    # print ('request.files[file] = ',request.files["file"])
 
     file_to_upload = request.files["file"]
+    form_data = request.form
+    print("Form_Data = ",form_data)
 
-    # # c-sharebnb-r26
+    title = form_data["title"]
+    # TODO: Way to create Unique key for file naming
+    #   Should occur in post route logic, not via form input.
+    img_key = form_data["img_key"]
+    description = form_data["description"]
+    price = form_data["price"]
+    zipcode = form_data["zipcode"]
 
-    # Upload a new file
-    # data = open('test.jpg', 'rb')
-    # Puts ion bucket?
+    print ('############## ',title,img_key,description,price,zipcode)
+
     resp = s3.Bucket(AWS_BUCKET).put_object(Key='test7.jpg', Body=file_to_upload)
-    # Not duplicate action, just provides the url?
-    # aws_url = s3.generate_presigned_url('put_object', Params= {'Bucket': AWS_BUCKET,
-    #                                                     "Key":"test6"},
-    #                                                      ExpiresIn=3600)
-
-    # print ('resp = ',resp.key,resp.keys())
-    # print ("aws_url = ",aws_url)
 
     url = f'{AWS_BASE_URL}{resp.key}'
     print('url = ',url)
 
-    # FOR REFERENCE
-    ###################################################
-    # <Request 'http://localhost:5001/results' [POST]>
-    # request.files[file] =  <FileStorage: 'testCat.jpeg' ('image/jpeg')>
-    # resp =  s3.Object(bucket_name='c-sharebnb-r26', key='test.jpg')
 
-    # TODO: request.files
 
-    # # TODO:
+    # FIXME: Review if changed from current to API.
     # flavor = request.json["flavor"]
     # size = request.json["size"]
     # rating = request.json["rating"]
