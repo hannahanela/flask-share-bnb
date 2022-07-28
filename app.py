@@ -29,8 +29,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///share_bnb"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 connect_db(app)
-db.drop_all()
-db.create_all()
+# db.drop_all()
+# db.create_all()
 
 
 # Having the Debug Toolbar show redirects explicitly is often useful;
@@ -40,6 +40,16 @@ db.create_all()
 
 toolbar = DebugToolbarExtension(app)
 
+@app.route('/api', methods=["GET"])
+def get_form():
+    """
+    Display form for creating a listing.
+
+    """
+
+    return render_template("file_input.html")
+
+
 @app.route('/api/listings', methods=["GET"])
 def get_Listings():
     """
@@ -48,15 +58,11 @@ def get_Listings():
             listing as {username, img, description, price}
     """
 
-    # # TODO: Create Listing Object
-    # listings = Listing.query.all()
-    # # TODO: What is serializing again?
-    # serialized = [cupcake.serialize() for cupcake in cupcakes]
+    listings = Listing.query.all()
+    serialized = [listing.serialize() for listing in listings]
 
-    # # TODO:
-    # return jsonify(listings=serialized)
+    return jsonify(listings=serialized)
 
-    return render_template("file_input.html")
 
 @app.route("/api/listings/<int:listing_id>", methods=["GET"])
 def get_listing(listing_id):
@@ -65,12 +71,12 @@ def get_listing(listing_id):
         {listing: {username, img, description, price}}
     """
     # # TODO: Internal route logic
-    # listing = Listing.query.get_or_404(listing_id)
-    # serialize = listing.serialize()
+    listing = Listing.query.get_or_404(listing_id)
+    serialize = listing.serialize()
 
-    # return jsonify(listing=serialize)
+    return jsonify(listing=serialize)
 
-    return "/api/listings/<int:listing_id>"
+    # return "/api/listings/<int:listing_id>"
 
 # ######################################################################### POST
 

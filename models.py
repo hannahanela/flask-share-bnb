@@ -72,6 +72,18 @@ class Listing(db.Model):
         nullable=False,
     )
 
+    def serialize(self):
+        """Serialize to dictionary."""
+
+        return { 
+            "id": self.id,
+            "title": self.title,
+            "img_key": self.img_key,
+            "description": self.description,
+            "price": self.price,
+            "zipcode": self.zipcode,
+        }
+
 #############   Class methods; cls is the self equivalent of Classes. ##########
 # Example register a user. Called on the Class instance.
 #     @classmethod
