@@ -95,6 +95,8 @@ def listing_create():
     Stores the file in AWS bucket. Sets file extension and stores file extension
     in database as img_key.
 
+    TODO: add other form data in docstring
+
     Returns with JSON:
        TODO:  {listing: {username,img, description, price}}
     """
@@ -127,14 +129,32 @@ def listing_create():
 
 
 
-    # FIXME: FORM DATA CATCH AND ASSIGN AS VARIABLES
-    form_data = request.form
-    # print("Form_Data = ",form_data)
+    # FIXME: FORM DATA CONNECTED TO TEMPLATE
+    # form_data = request.form
+    # # print("Form_Data = ",form_data)
 
-    title = form_data["title"]
-    description = form_data["description"]
-    price = int(form_data["price"])
-    zipcode = form_data["zipcode"]
+    # title = form_data["title"]
+    # description = form_data["description"]
+    # price = int(form_data["price"])
+    # zipcode = form_data["zipcode"]
+
+
+    # TODO: API REQUEST FROM REACT
+    request_data = request.json
+    print ("************request_data=", request_data)
+    title = request_data["title"]
+    description = request_data["description"]
+    price = int(request_data["price"])
+    zipcode = request_data["zipcode"]
+
+    print ("request data =", title, description, price, zipcode)
+
+    return jsonify("woo!", 206)
+
+
+
+    # basic async, method POST data = React formData
+    # url localhost:5000 (.env) 
 
     # print ('############## ',title,img_key,description,price,zipcode)
 
