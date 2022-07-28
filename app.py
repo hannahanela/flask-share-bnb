@@ -104,22 +104,22 @@ def listing_create():
 
     # TODO: Allowed file extensions
     # FIXME: Commenting out for testing purposes.
-    # file_to_upload = request.files["file"]
-    # print ('###################################################',request.files)
-    # print ('request.files[file] = ',request.files["file"])
-    # print('file_to_upload.filename = ',file_to_upload.filename)
-    # file_proper = file_to_upload.filename
-    # file_extension = file_proper.split(".")[1]
-    # print ("THE FILE EXTENSION!!! = ", file_extension)
+    file_to_upload = request.files['file']
+    print ('################################',file_to_upload)
+    file_proper = file_to_upload.filename
+    print('file_to_upload.filename = ',file_proper)
+
+    file_extension = file_proper.split(".")[1]
+    print ("THE FILE EXTENSION!!! = ", file_extension)
 
     # # We have the file extension
-    # id = uuid.uuid4()
+    id = uuid.uuid4()
 
     # #
     # # "Unique identifer" + "." + "file_extension"
 
-    # url = f'{AWS_BASE_URL}{id}.{file_extension}'
-    # print('url = ',url)
+    url = f'{AWS_BASE_URL}{id}.{file_extension}'
+    print('url = ',url)
 
 
 
@@ -130,27 +130,30 @@ def listing_create():
 
 
 
-    # FIXME: FORM DATA CONNECTED TO TEMPLATE
-    # form_data = request.form
-    # # print("Form_Data = ",form_data)
+    # FIXME: FORM DATA recieved from JSFORMDATAOBJ
+    form_data = request.form
+    print("Form_Data = ",form_data)
 
-    # title = form_data["title"]
-    # description = form_data["description"]
-    # price = int(form_data["price"])
-    # zipcode = form_data["zipcode"]
+    title = form_data["title"]
+    description = form_data["description"]
+    price = int(form_data["price"])
+    zipcode = form_data["zipcode"]
 
 
-    # TODO: API REQUEST FROM REACT
-    request_data = request.json
-    print ("************request_data=", request_data)
-    title = request_data["title"]
-    description = request_data["description"]
-    price = int(request_data["price"])
-    zipcode = request_data["zipcode"]
+    # # TODO: API REQUEST FROM REACT
+    # breakpoint()
+    # print(request)
+    # request_data = request.json
+    # print ("************request_data=", request_data)
+    # file = request_data["file"]
+    # print ('file = ',file)
+    # title = request_data["title"]
+    # description = request_data["description"]
+    # price = int(request_data["price"])
+    # zipcode = request_data["zipcode"]
 
     print ("request data =", title, description, price, zipcode)
 
-    return jsonify("woo!", 206)
 
 
 
@@ -188,14 +191,17 @@ def listing_create():
     db.session.add(new_listing)
     db.session.commit()
 
-    # # TODO:
-    # serialized = new_cupcake.serialize()
+    # TODO:
 
-    # # TODO:
-    # return (jsonify(cupcake=serialized), 201)
+    serialize = new_listing.serialize()
+    return jsonify(listing=serialize)
+
+    return (jsonify(cupcake=serialized), 201)
 
     # TODO: Return the url for the file!
     # redirect('https://c-sharebnb-r26.s3.us-west-1.amazonaws.com/')
+    return jsonify(new_listing, 201)
+
     return render_template('file_input.html',url=url)
     # return render_template('file_input.html')
 
