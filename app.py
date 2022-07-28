@@ -2,6 +2,8 @@
 import os
 from dotenv import load_dotenv
 
+from flask_cors import CORS
+
 # from pickle import GET
 # from webbrowser import get
 from flask import Flask, url_for, render_template, redirect, flash, jsonify, request
@@ -18,6 +20,9 @@ from models import db, connect_db, Listing
 
 load_dotenv()
 app = Flask(__name__)
+# TODO: Cors Config restrict Origins to only LH3000
+CORS(app)
+
 
 app.config['SECRET_KEY'] = "secret"
 app.config['SQLALCHEMY_ECHO'] = True
