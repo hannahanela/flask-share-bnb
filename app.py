@@ -100,25 +100,26 @@ def listing_create():
     Returns with JSON:
        TODO:  {listing: {username,img, description, price}}
     """
+    print ("$$$$$$$$$$$$$$$$$$$$$$$$$ POST ROUTE")
 
     # TODO: Allowed file extensions
+    # FIXME: Commenting out for testing purposes.
+    # file_to_upload = request.files["file"]
+    # print ('###################################################',request.files)
+    # print ('request.files[file] = ',request.files["file"])
+    # print('file_to_upload.filename = ',file_to_upload.filename)
+    # file_proper = file_to_upload.filename
+    # file_extension = file_proper.split(".")[1]
+    # print ("THE FILE EXTENSION!!! = ", file_extension)
 
-    file_to_upload = request.files["file"]
-    print ('###################################################',request.files)
-    print ('request.files[file] = ',request.files["file"])
-    print('file_to_upload.filename = ',file_to_upload.filename)
-    file_proper = file_to_upload.filename
-    file_extension = file_proper.split(".")[1]
-    print ("THE FILE EXTENSION!!! = ", file_extension)
+    # # We have the file extension
+    # id = uuid.uuid4()
 
-    # We have the file extension
-    id = uuid.uuid4()
+    # #
+    # # "Unique identifer" + "." + "file_extension"
 
-    #
-    # "Unique identifer" + "." + "file_extension"
-
-    url = f'{AWS_BASE_URL}{id}.{file_extension}'
-    print('url = ',url)
+    # url = f'{AWS_BASE_URL}{id}.{file_extension}'
+    # print('url = ',url)
 
 
 
@@ -154,7 +155,7 @@ def listing_create():
 
 
     # basic async, method POST data = React formData
-    # url localhost:5000 (.env) 
+    # url localhost:5000 (.env)
 
     # print ('############## ',title,img_key,description,price,zipcode)
 
