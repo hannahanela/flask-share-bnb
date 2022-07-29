@@ -134,6 +134,8 @@ def listing_create():
     form_data = request.form
     print("Form_Data = ",form_data)
 
+    # breakpoint()
+
     title = form_data["title"]
     description = form_data["description"]
     price = int(form_data["price"])
