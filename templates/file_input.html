@@ -4,45 +4,45 @@
 
 {% block content %}
 
-  <h1 class="pt-4 mb-3 text-center">File Input!</h1>
+<h1 class="pt-4 mb-3 text-center">File Input!</h1>
 
-  <div class="ms-3 me-3">
-    <form enctype="multipart/form-data" action="/api/listings" class="pb-4" method="POST">
-      <br>
-      <label for="file">File:
-        <input  type="file" name="file" id="file" required>
-      </label>
-      <br>
+<div class="ms-3 me-3">
+  <form enctype="multipart/form-data" action="/api/listings" class="pb-4" method="POST">
+    <br>
+    <label for="file">File:
+      <input type="file" name="file" id="file" required>
+    </label>
+    <br>
 
-      <label for="title">Title:
-        <input  type="text" name="title" id="title" required>
-      </label>
-      <br>
+    <label for="title">Title:
+      <input type="text" name="title" id="title" required>
+    </label>
+    <br>
 
-      <label for="description">Description:
-        <input  type="text" name="description" id="description" required>
-      </label>
-      <br>
+    <label for="description">Description:
+      <input type="text" name="description" id="description" required>
+    </label>
+    <br>
 
-      <label for="price">Price:
-        <input  type="text" name="price" id="price" required>
-      </label>
-      <br>
+    <label for="price">Price:
+      <input type="text" name="price" id="price" required>
+    </label>
+    <br>
 
-      <label for="zipcode">Zipcode:
-        <input  type="text" name="zipcode" id="zipcode" required>
-      </label>
+    <label for="zipcode">Zipcode:
+      <input type="text" name="zipcode" id="zipcode" required>
+    </label>
 
-      <button class="btn btn-primary btn-lg w-100">
-        Uploads a File!
-      </button>
-    </form>
+    <button class="btn btn-primary btn-lg w-100">
+      Uploads a File!
+    </button>
+  </form>
 
-    <!-- <img src="https://c-sharebnb-r26.s3.us-west-1.amazonaws.com/test7.jpg"/> -->
+  <!-- <img src="https://c-sharebnb-r26.s3.us-west-1.amazonaws.com/test7.jpg"/> -->
 
-    {% if url %}
-    <img src={{ url }} alt="Img description"/>
-    {% endif %}
+  {% if url %}
+  <img src={{ url }} alt="Img description" />
+  {% endif %}
 
 
 
