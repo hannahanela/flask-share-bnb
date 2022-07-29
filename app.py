@@ -3,9 +3,6 @@ import os
 from dotenv import load_dotenv
 
 from flask_cors import CORS
-
-# from pickle import GET
-# from webbrowser import get
 from flask import Flask, url_for, render_template, redirect, flash, jsonify, request
 
 import uuid
@@ -16,7 +13,6 @@ s3 = boto3.resource('s3')
 from flask_debugtoolbar import DebugToolbarExtension
 
 from models import db, connect_db, Listing
-# from forms import AddPetForm, EditPetForm
 
 load_dotenv()
 app = Flask(__name__)
@@ -34,8 +30,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///share_bnb"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 connect_db(app)
-# db.drop_all()
-# db.create_all()
 
 
 # Having the Debug Toolbar show redirects explicitly is often useful;
@@ -75,13 +69,12 @@ def get_listing(listing_id):
     Get data about a single listing. Returns with JSON:
         {listing: {username, img, description, price}}
     """
-    # # TODO: Internal route logic
+
     listing = Listing.query.get_or_404(listing_id)
     serialize = listing.serialize()
 
     return jsonify(listing=serialize)
 
-    # return "/api/listings/<int:listing_id>"
 
 # ######################################################################### POST
 
@@ -100,86 +93,37 @@ def listing_create():
     Returns with JSON:
        TODO:  {listing: {username,img, description, price}}
     """
-    print ("$$$$$$$$$$$$$$$$$$$$$$$$$ POST ROUTE")
 
-    # TODO: Allowed file extensions
-    # FIXME: Commenting out for testing purposes.
+    # TODO: Only allowed file extensions
     file_to_upload = request.files['file']
-    print ('################################',file_to_upload)
     file_proper = file_to_upload.filename
-    print('file_to_upload.filename = ',file_proper)
 
     file_extension = file_proper.split(".")[1]
-    print ("THE FILE EXTENSION!!! = ", file_extension)
 
-    # # We have the file extension
     id = uuid.uuid4()
 
-    # #
-    # # "Unique identifer" + "." + "file_extension"
-
+    # "Unique identifer" + "." + "file_extension"
     url = f'{AWS_BASE_URL}{id}.{file_extension}'
-    print('url = ',url)
 
-
-
-    # Put in 2 places
+    # Put id + file_extension in 2 places:
     # 1. new_listing = Listing(img_key="Unique identifer" + "." + "file_extension"
     # 2. s3.Bucket(AWS_BUCKET).put_object(Key="Unique identifer" + "." + "file_extension"
 
 
 
 
-    # FIXME: FORM DATA recieved from JSFORMDATAOBJ
+    # TODO: Review how FOrmData JS is passing this to request.form in Flask.
     form_data = request.form
-    print("Form_Data = ",form_data)
-
-    # breakpoint()
 
     title = form_data["title"]
     description = form_data["description"]
     price = int(form_data["price"])
     zipcode = form_data["zipcode"]
 
-
-    # # TODO: API REQUEST FROM REACT
-    # breakpoint()
-    # print(request)
-    # request_data = request.json
-    # print ("************request_data=", request_data)
-    # file = request_data["file"]
-    # print ('file = ',file)
-    # title = request_data["title"]
-    # description = request_data["description"]
-    # price = int(request_data["price"])
-    # zipcode = request_data["zipcode"]
-
-    print ("request data =", title, description, price, zipcode)
-
-
-
-
-    # basic async, method POST data = React formData
-    # url localhost:5000 (.env)
-
-    # print ('############## ',title,img_key,description,price,zipcode)
-
-    # REQUEST TO AWS TO PUT IN BUCKETY
+    # REQUEST TO AWS TO PUT IN BUCKET
     resp = s3.Bucket(AWS_BUCKET).put_object(Key=f"{id}.{file_extension}", Body=file_to_upload)
 
-
-
-    # FIXME: Review if changed from current to API.
-    # flavor = request.json["flavor"]
-    # size = request.json["size"]
-    # rating = request.json["rating"]
-    # image = request.json.get("image")
-    # image = image if image else None
-
-    # # alternate method
-    # # image = request.get_json()["image"]
-
-
+    # Creating instance of Listing Model to add to db.
     new_listing = Listing(
         title=title,
         img_key=f'{id}.{file_extension}',
@@ -188,24 +132,16 @@ def listing_create():
         zipcode=zipcode,
         )
 
-
-    # FIXME: PUT IN DATABASE
     db.session.add(new_listing)
     db.session.commit()
 
-    # TODO:
-
     serialize = new_listing.serialize()
+
+    # TODO: add status code
     return jsonify(listing=serialize)
 
-    return (jsonify(cupcake=serialized), 201)
-
-    # TODO: Return the url for the file!
-    # redirect('https://c-sharebnb-r26.s3.us-west-1.amazonaws.com/')
-    return jsonify(new_listing, 201)
-
-    return render_template('file_input.html',url=url)
-    # return render_template('file_input.html')
+    # Alternate with Flask forms.
+    # return render_template('file_input.html',url=url)
 
 
 # ######################################################################## PATCH
